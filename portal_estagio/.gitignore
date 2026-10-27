@@ -1,0 +1,10 @@
+target/
+out/
+.idea/
+*.iml
+.vscode/
+*.class
+
+# credenciais locais - NUNCA commitar
+.env
+config.local.properties

@@ -8,6 +8,10 @@ Portal que conecta estudantes a vagas de estágio.
 Perfis: estudante, empresa e administrador.
 Nesta etapa (14/10) o projeto contém apenas o modelo de domínio e uma demonstração simples no console.
 
+## Requisito de execução
+
+O projeto requer JDK 25 (LTS) e Maven para compilação e execução.
+
 <img width="992" height="877" alt="image" src="https://github.com/user-attachments/assets/331c2a6a-3418-497e-a87f-eed9a26cab52" />
 
 código plantuml 
