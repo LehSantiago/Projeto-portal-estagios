@@ -23,15 +23,16 @@ public class UsuarioDaoJdbc implements UsuarioDao {
     }
 
     @Override
-    public Usuario salvar(Usuario usuario) {
-        String sql = "INSERT INTO usuario (nome, email, perfil, curso, nome_empresa) "
-                + "VALUES (?, ?, ?, ?, ?) RETURNING id";
+    public Usuario salvar(Usuario usuario, String senhaHash) {
+        String sql = "INSERT INTO usuario (nome, email, perfil, curso, nome_empresa, senha) "
+                + "VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
         try (Connection c = conexoes.abrir(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, usuario.getNome());
             ps.setString(2, usuario.getEmail());
             ps.setString(3, usuario.getPerfil().name());
             ps.setString(4, usuario.getCurso());
             ps.setString(5, usuario.getNomeEmpresa());
+            ps.setString(6, senhaHash);
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 usuario.setId(rs.getLong(1));
@@ -39,6 +40,23 @@ public class UsuarioDaoJdbc implements UsuarioDao {
             return usuario;
         } catch (SQLException e) {
             throw ConexaoFactory.traduzir(e, "salvar usuário");
+        }
+    }
+
+    @Override
+    public Optional<Credencial> buscarCredencialPorEmail(String email) {
+        String sql = "SELECT email, perfil, senha FROM usuario WHERE LOWER(email) = LOWER(?)";
+        try (Connection c = conexoes.abrir(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(new Credencial(rs.getString("email"),
+                        Perfil.valueOf(rs.getString("perfil")), rs.getString("senha")));
+            }
+        } catch (SQLException e) {
+            throw ConexaoFactory.traduzir(e, "buscar credencial");
         }
     }
 

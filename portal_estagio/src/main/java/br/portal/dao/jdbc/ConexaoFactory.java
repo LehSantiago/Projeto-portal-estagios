@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  * Fabrica conexões com o PostgreSQL. As credenciais NUNCA ficam no código.
@@ -29,14 +30,25 @@ public class ConexaoFactory {
     private static final String SQLSTATE_CHAVE_ESTRANGEIRA = "23503";
     private static final String SQLSTATE_CHECK = "23514";
 
+    private final DataSource dataSource;
     private final String url;
     private final String usuario;
     private final String senha;
 
+    /** Modo console (Entrega 1): conexão direta por DriverManager. */
     public ConexaoFactory(String url, String usuario, String senha) {
+        this.dataSource = null;
         this.url = url;
         this.usuario = usuario;
         this.senha = senha;
+    }
+
+    /** Modo Spring Boot (Entrega 2): usa o DataSource (pool) configurado pelo Spring. */
+    public ConexaoFactory(DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.url = null;
+        this.usuario = null;
+        this.senha = null;
     }
 
     public static ConexaoFactory doAmbiente() {
@@ -96,7 +108,7 @@ public class ConexaoFactory {
     /** Abre uma nova conexão. Quem chama deve fechá-la (try-with-resources). */
     public Connection abrir() {
         try {
-            return DriverManager.getConnection(url, usuario, senha);
+            return dataSource != null ? dataSource.getConnection() : DriverManager.getConnection(url, usuario, senha);
         } catch (SQLException e) {
             throw new PersistenciaException("Não foi possível conectar ao banco de dados.", e);
         }

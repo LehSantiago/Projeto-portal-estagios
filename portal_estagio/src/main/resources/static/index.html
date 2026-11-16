@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal de Estágios</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+<header>
+  <h1>Portal de Estágios</h1>
+  <nav id="menu" aria-label="Menu principal"></nav>
+  <span id="usuario"></span>
+</header>
+
+<div id="aviso" role="status" hidden></div>
+
+<main>
+  <!-- VAGAS ABERTAS (público): filtros, lista e detalhes -->
+  <section id="view-vagas" hidden>
+    <h2>Vagas abertas</h2>
+    <form id="form-filtros" class="linha">
+      <label>Área
+        <select id="filtro-area"><option value="">Todas</option></select>
+      </label>
+      <label>Modalidade
+        <select id="filtro-modalidade">
+          <option value="">Todas</option>
+          <option value="PRESENCIAL">Presencial</option>
+          <option value="REMOTA">Remota</option>
+          <option value="HIBRIDA">Híbrida</option>
+        </select>
+      </label>
+      <label>Palavra-chave
+        <input id="filtro-q" type="text" maxlength="60">
+      </label>
+      <button type="submit">Filtrar</button>
+      <button type="button" id="btn-limpar" class="secundario">Limpar</button>
+    </form>
+    <div id="lista-vagas"></div>
+    <article id="detalhe-vaga" class="cartao" hidden></article>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="view-login" hidden>
+    <h2>Entrar</h2>
+    <form id="form-login" class="coluna">
+      <label>E-mail <input id="login-email" type="email" required maxlength="160" autocomplete="username"></label>
+      <label>Senha <input id="login-senha" type="password" required autocomplete="current-password"></label>
+      <button type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- CADASTRO (estudante ou empresa; administrador NÃO se cadastra aqui) -->
+  <section id="view-cadastro" hidden>
+    <h2>Cadastrar-se</h2>
+    <div class="duas-colunas">
+      <form id="form-estudante" class="coluna cartao">
+        <h3>Sou estudante</h3>
+        <label>Nome <input id="est-nome" required maxlength="120"></label>
+        <label>E-mail <input id="est-email" type="email" required maxlength="160"></label>
+        <label>Curso <input id="est-curso" required maxlength="120"></label>
+        <label>Senha <input id="est-senha" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+        <small>8 a 72 caracteres, com letras e números.</small>
+        <button type="submit">Cadastrar estudante</button>
+      </form>
+      <form id="form-empresa" class="coluna cartao">
+        <h3>Sou empresa</h3>
+        <label>Seu nome <input id="emp-nome" required maxlength="120"></label>
+        <label>E-mail <input id="emp-email" type="email" required maxlength="160"></label>
+        <label>Nome da empresa <input id="emp-empresa" required maxlength="120"></label>
+        <label>Senha <input id="emp-senha" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+        <small>8 a 72 caracteres, com letras e números.</small>
+        <button type="submit">Cadastrar empresa</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ESTUDANTE: minhas candidaturas -->
+  <section id="view-candidaturas" hidden>
+    <h2>Minhas candidaturas</h2>
+    <div id="lista-candidaturas"></div>
+  </section>
+
+  <!-- EMPRESA: minhas vagas e candidatos -->
+  <section id="view-minhas-vagas" hidden>
+    <h2>Minhas vagas</h2>
+    <div id="lista-minhas-vagas"></div>
+    <article id="painel-candidatos" class="cartao" hidden></article>
+  </section>
+
+  <!-- EMPRESA: publicar / editar vaga -->
+  <section id="view-form-vaga" hidden>
+    <h2 id="titulo-form-vaga">Publicar vaga</h2>
+    <form id="form-vaga" class="coluna">
+      <input id="vaga-id" type="hidden">
+      <label>Título <input id="vaga-titulo" required maxlength="150"></label>
+      <label>Descrição <textarea id="vaga-descricao" required rows="4"></textarea></label>
+      <label>Área <select id="vaga-area" required></select></label>
+      <label>Localização <input id="vaga-localizacao" required maxlength="120"></label>
+      <label>Modalidade
+        <select id="vaga-modalidade" required>
+          <option value="PRESENCIAL">Presencial</option>
+          <option value="REMOTA">Remota</option>
+          <option value="HIBRIDA">Híbrida</option>
+        </select>
+      </label>
+      <label>Carga horária semanal (horas) <input id="vaga-carga" type="number" min="1" max="60" required></label>
+      <div class="linha">
+        <button type="submit">Salvar vaga</button>
+        <button type="button" id="btn-cancelar-vaga" class="secundario">Cancelar</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer><small>Funções de administrador (áreas e relatórios) são demonstradas pela API, com Postman ou Insomnia. Veja o README.</small></footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

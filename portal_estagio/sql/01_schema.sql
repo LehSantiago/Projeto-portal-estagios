@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS area        CASCADE;
 DROP TABLE IF EXISTS usuario     CASCADE;
 
 -- Usuário: um único cadastro para os três perfis (curso só para estudante,
--- nome_empresa só para empresa). A senha será acrescentada na Entrega 2.
+-- nome_empresa só para empresa). A coluna senha guarda apenas o hash BCrypt.
 CREATE TABLE usuario (
     id           BIGSERIAL    PRIMARY KEY,
     nome         VARCHAR(120) NOT NULL,
@@ -16,6 +16,7 @@ CREATE TABLE usuario (
     perfil       VARCHAR(20)  NOT NULL,
     curso        VARCHAR(120),
     nome_empresa VARCHAR(120),
+    senha        VARCHAR(255), -- hash BCrypt (nunca a senha em texto puro)
     CONSTRAINT uq_usuario_email UNIQUE (email),
     CONSTRAINT ck_usuario_email_minusculo CHECK (email = LOWER(email)),
     CONSTRAINT ck_usuario_perfil CHECK (perfil IN ('ESTUDANTE', 'EMPRESA', 'ADMINISTRADOR')),

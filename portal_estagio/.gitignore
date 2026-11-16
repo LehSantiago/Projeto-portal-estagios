@@ -1,10 +1,7 @@
 target/
-out/
-.idea/
-*.iml
-.vscode/
-*.class
-
-# credenciais locais - NUNCA commitar
 .env
-config.local.properties
+*.log
+.idea/
+.vscode/
+.DS_Store
+*.class

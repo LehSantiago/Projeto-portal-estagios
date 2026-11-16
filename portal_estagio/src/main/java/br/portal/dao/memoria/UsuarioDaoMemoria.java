@@ -10,18 +10,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** Implementação TEMPORÁRIA em memória. Será substituída por UsuarioDaoJdbc. */
+/** Implementação em memória: usada nos testes, no modo console --memoria e no perfil Spring "memoria". */
 public class UsuarioDaoMemoria implements UsuarioDao {
     private final Map<Long, Usuario> dados = new LinkedHashMap<>();
+    private final Map<Long, String> hashes = new LinkedHashMap<>();
     private long proximoId = 1;
 
     @Override
-    public Usuario salvar(Usuario usuario) {
+    public Usuario salvar(Usuario usuario, String senhaHash) {
         if (usuario.getId() == null) {
             usuario.setId(proximoId++);
         }
         dados.put(usuario.getId(), usuario);
+        if (senhaHash != null) {
+            hashes.put(usuario.getId(), senhaHash);
+        }
         return usuario;
+    }
+
+    @Override
+    public Optional<Credencial> buscarCredencialPorEmail(String email) {
+        return buscarPorEmail(email)
+                .map(u -> new Credencial(u.getEmail(), u.getPerfil(), hashes.get(u.getId())));
     }
 
     @Override

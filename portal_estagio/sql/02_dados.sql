@@ -1,7 +1,9 @@
--- Dados fictícios para demonstração (identidade simulada). Execute depois de 01_schema.sql.
+-- Dados fictícios de estudante e empresa. Execute depois de 01_schema.sql.
+-- O administrador é criado pelo inicializador controlado do Spring Boot.
+-- ATENÇÃO: estes usuários de exemplo NÃO têm senha (coluna senha = NULL), portanto não conseguem
+-- fazer login. Para testar a interface, cadastre estudante/empresa pela tela de cadastro.
 
 INSERT INTO usuario (nome, email, perfil, curso, nome_empresa) VALUES
-    ('Admin Demo', 'admin@portal.com',      'ADMINISTRADOR', NULL,                    NULL),
     ('Carla RH',   'rh@techcorp.com',       'EMPRESA',       NULL,                    'TechCorp'),
     ('Paulo RH',   'rh@designhub.com',      'EMPRESA',       NULL,                    'DesignHub'),
     ('Ana Souza',  'ana@aluno.com',         'ESTUDANTE',     'Ciência da Computação', NULL),
