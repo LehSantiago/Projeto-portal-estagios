@@ -135,13 +135,6 @@ Resumo (detalhes, uso do Supabase, execução sem Maven e solução de problemas
 2. Copie `.env.example` para `.env` e preencha URL, usuário e senha do banco.
 3. Rode `mvn compile exec:java` na raiz do projeto.
 
-## Próximos passos: Entrega 2
-
-O mesmo projeto evolui para **Spring Boot**: controllers REST e DTOs com validação de entrada, autenticação por sessão com
-**Spring Security** (senha com `BCrypt`, login e logout, proteção CSRF) e autorização por perfil e propriedade no backend.
-Modelo, serviços e DAOs são reaproveitados; a identidade simulada é substituída pelo usuário autenticado e a tabela
-`usuario` ganha o hash da senha.
-
 ## Documentação
 
 [Modelo de domínio](docs/modelo-dominio.md) · [Esquema das tabelas](docs/esquema-tabelas.md) ·
