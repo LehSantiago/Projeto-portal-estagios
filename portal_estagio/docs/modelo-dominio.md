@@ -62,6 +62,7 @@ classDiagram
 
 ## Decisões a justificar
 - Perfis em uma única classe (`Usuario` + enum `Perfil`), sem herança: as diferenças são só dois campos opcionais,
-  e uma tabela única simplifica o DAO e a identidade simulada.
+  e uma tabela única simplifica o DAO e a autenticação.
 - `Candidatura` como classe própria (e não lista dentro de `Vaga`/`Usuario`) porque carrega dado próprio (data) e precisa de restrição de unicidade.
 - Vaga encerrada continua no banco (situação `ENCERRADA`) para preservar as candidaturas anteriores.
+- O hash da senha fica apenas na coluna `usuario.senha` e no DAO; o objeto `Usuario` não o carrega, de modo que ele não é exposto pela API.

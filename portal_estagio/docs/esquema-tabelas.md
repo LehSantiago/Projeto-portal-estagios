@@ -16,6 +16,7 @@ erDiagram
         varchar perfil
         varchar curso
         varchar nome_empresa
+        varchar senha "hash BCrypt"
     }
     AREA {
         bigserial id PK
@@ -43,6 +44,7 @@ erDiagram
 | Restrição | Onde | Para que serve |
 |---|---|---|
 | `UNIQUE (email)` + `CHECK (email = LOWER(email))` | usuario | e-mail único |
+| coluna `senha` (hash BCrypt) | usuario | guarda apenas o hash; nunca a senha em texto puro |
 | `UNIQUE (LOWER(nome))` | area | nome de área único, sem diferenciar maiúsculas |
 | `UNIQUE (estudante_id, vaga_id)` | candidatura | impede candidatura repetida |
 | FK `vaga.area_id → area.id` (sem CASCADE) | vaga | o banco também impede excluir área em uso |

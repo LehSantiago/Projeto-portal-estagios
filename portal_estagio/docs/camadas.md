@@ -26,3 +26,18 @@ Menu (console) → Service → interface DAO → implementação JDBC → Postgr
 - `VagaService.consultarAbertas(..., palavraChave)`: `Predicate<Vaga>` combinados com `or` para buscar no título ou na descrição sem criar um método por combinação.
 - `CandidaturaService.listarCandidatos`: lambda em `Comparator.comparing` para ordenar candidatos por nome.
 - `UsuarioDaoJdbc.Parametros`: interface funcional própria que isola como preencher o `PreparedStatement`, evitando repetir o bloco try/catch nas buscas.
+
+## Camadas na Entrega 2 (API REST)
+
+```
+Navegador / Postman → Spring Security → Controller → DTO → Service → interface DAO → implementação JDBC → PostgreSQL
+```
+
+| Camada | Pacote | Responsabilidade |
+|---|---|---|
+| Segurança | `security` | Sessão HTTP, CSRF, BCrypt, autorização por perfil e `UserDetailsService` |
+| Controllers | `controller` | Recebem HTTP, validam o DTO, obtêm o usuário autenticado e chamam o Service; `ApiExceptionHandler` converte exceções em respostas JSON |
+| DTOs | `dto` | Formato de entrada e saída da API, com Bean Validation; nunca expõem senha nem hash |
+| Configuração | `config` | `PortalConfig` (Services), `JdbcConfig` (DAOs JDBC), `MemoriaConfig` (perfil `memoria`) e `AdminInitializer` |
+
+Os Services e os DAOs são os mesmos da Entrega 1. A identidade do usuário vem de `Authentication`, nunca de um id enviado pelo cliente.

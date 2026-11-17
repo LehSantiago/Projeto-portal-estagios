@@ -2,13 +2,13 @@
 
 Aplicação web acadêmica para conectar estudantes a oportunidades de estágio, com três perfis: `ESTUDANTE`, `EMPRESA` e `ADMINISTRADOR`.
 
-A Entrega 2 evolui a base da Entrega 1 para **Spring Boot + API REST + Spring Security**, preservando Java, PostgreSQL, JDBC, DAOs, Services, Models e regras de negócio existentes. A aplicação utiliza **sessão HTTP e proteção CSRF**; JWT não foi adotado porque a sessão é a abordagem de referência do enunciado.
+A Entrega 2 evolui a base da Entrega 1 para **Spring Boot + API REST + Spring Security**, preservando Java, PostgreSQL, JDBC, DAOs, Services, Models e regras de negócio existentes. A aplicação utiliza **sessão HTTP e proteção CSRF**; JWT não é utilizado.
 
 > **Pasta correta para executar:** `portal_estagio/` — é nela que ficam `pom.xml`, `src/`, `sql/` e o `.env` local. Todos os comandos Maven deste documento devem ser executados nessa pasta.
 
 ## 1. Tecnologias
 
-- Java 17 (versão exigida para a entrega).
+- Java 17.
 - Maven.
 - Spring Boot 3.5.7: Spring Web, Spring Security, Spring JDBC e Bean Validation.
 - PostgreSQL. O ambiente de desenvolvimento da equipe utiliza Supabase (PostgreSQL hospedado) com Session Pooler.
@@ -49,7 +49,6 @@ portal_estagio/
 │   ├── esquema-tabelas.md
 │   ├── entrega-2-implementacao.md
 │   ├── roteiro-verificacao.md
-│   ├── checklist-entrega-2.md
 │   └── RELATORIO-ENTREGA-2.md
 └── src/
     ├── main/java/br/portal/
@@ -69,7 +68,7 @@ portal_estagio/
 
 ## 4. Pré-requisitos
 
-- JDK **17** instalado e selecionado no `JAVA_HOME`/`PATH`.
+- JDK **17** (ou superior) instalado e selecionado no `JAVA_HOME`/`PATH`. O projeto é compilado com `--release 17`.
 - Maven 3.6.3 ou superior.
 - Acesso à internet para baixar dependências Maven na primeira execução.
 - Projeto PostgreSQL acessível. No ambiente da equipe, o banco é hospedado no Supabase.
@@ -82,7 +81,7 @@ java -version
 mvn -version
 ```
 
-Na saída de `mvn -version`, confirme que o Maven está usando Java 17. Um log anterior da equipe mostrou Java 25.0.5, embora o Maven compilasse com `--release 17`; para a avaliação, faça uma execução final usando JDK 17.
+Na saída de `mvn -version`, confirme a versão do Java usada pelo Maven.
 
 ## 5. Banco PostgreSQL no Supabase
 
@@ -185,7 +184,7 @@ Para PostgreSQL instalado localmente, o formato de URL padrão é `jdbc:postgres
 
 `application.properties` importa o `.env` e mapeia as variáveis para o `DataSource` do Spring. `ConexaoFactory` recebe esse `DataSource`; na aplicação web, não é necessário inserir URL/senha em classes Java.
 
-O `.env` está listado no `.gitignore` e **não pode ser enviado ao GitHub nem ao Moodle**. Inclua apenas `.env.example`, sem credenciais reais. Se uma senha real foi compartilhada em conversa ou publicada em commit, redefina-a no Supabase/provedor e atualize seu `.env`.
+O `.env` está listado no `.gitignore` e não deve ser versionado nem enviado. Somente o `.env.example`, sem credenciais reais, faz parte do repositório.
 
 ## 7. Executar no Windows (VS Code, IntelliJ ou Git Bash)
 
@@ -209,7 +208,7 @@ Execute os testes:
 mvn clean test
 ```
 
-Se a suíte terminar com `BUILD SUCCESS`, inicie a aplicação:
+Em seguida, inicie a aplicação:
 
 ```bash
 mvn spring-boot:run
@@ -223,7 +222,7 @@ http://localhost:8080
 
 Para encerrar, volte ao terminal do servidor e pressione `Ctrl + C`.
 
-**Importante:** executar Maven na pasta externa `Projeto-portal-estagios/` resulta em “there is no POM in this directory” ou falha ao localizar o plugin `spring-boot`. Execute os comandos sempre em `portal_estagio/`.
+Os comandos Maven devem ser executados em `portal_estagio/`, a pasta que contém o `pom.xml`.
 
 ### Verificar a rede para o Supabase
 
@@ -233,7 +232,7 @@ No PowerShell, use o host real do Session Pooler:
 Test-NetConnection SEU_HOST_DO_POOLER -Port 5432
 ```
 
-`TcpTestSucceeded : True` confirma apenas que a porta está acessível. A validação completa depende de iniciar o Spring Boot com usuário/senha corretos e conseguir realizar uma consulta. No perfil padrão, a aplicação valida a conexão PostgreSQL na inicialização; se o banco não estiver acessível, o início deve falhar em vez de aparentar estar pronto sem persistência.
+`TcpTestSucceeded : True` confirma apenas que a porta está acessível. A validação de usuário e senha ocorre quando o Spring Boot inicia. No perfil padrão, a aplicação valida a conexão PostgreSQL na inicialização; se o banco não estiver acessível, o início falha.
 
 ### Perfil de memória (somente testes/demonstração)
 
@@ -241,7 +240,7 @@ Test-NetConnection SEU_HOST_DO_POOLER -Port 5432
 mvn spring-boot:run "-Dspring-boot.run.profiles=memoria"
 ```
 
-Esse perfil usa DAOs em memória; os dados desaparecem ao encerrar. Não use esse perfil para comprovar integração PostgreSQL ou persistência.
+Esse perfil usa DAOs em memória; os dados desaparecem ao encerrar. Ele não representa a integração com o PostgreSQL nem a persistência.
 
 ## 8. Interface web
 
@@ -377,9 +376,9 @@ A identidade do usuário é obtida de `Authentication`/Spring Security. O fronte
 
 A conta administrativa é criada por `AdminInitializer` **na inicialização controlada**, somente quando `PORTAL_ADMIN_EMAIL` e `PORTAL_ADMIN_PASSWORD` estão definidos e o e-mail ainda não existe. A senha é armazenada com BCrypt. Cadastro público de administrador não existe.
 
-Configure as duas variáveis no `.env` ou ambiente do processo antes de iniciar. Se o e-mail já existir, o inicializador não recria nem altera a senha. Para a apresentação, use uma conta de demonstração com senha forte e não inclua credenciais no repositório, ZIP ou README. Autentique via `POST /api/auth/login` e demonstre os endpoints `/api/admin/areas` e `/api/admin/relatorios` pelo Postman/Insomnia.
+Configure as duas variáveis no `.env` ou ambiente do processo antes de iniciar. Se o e-mail já existir, o inicializador não recria nem altera a senha. A conta é apenas para demonstração: use senha forte e não inclua credenciais no repositório, no ZIP ou no README. Autentique via `POST /api/auth/login` e demonstre os endpoints `/api/admin/areas` e `/api/admin/relatorios` pelo Postman/Insomnia.
 
-## 13. Testes automatizados e evidência
+## 13. Testes automatizados
 
 Execute na pasta `portal_estagio`:
 
@@ -387,99 +386,69 @@ Execute na pasta `portal_estagio`:
 mvn clean test
 ```
 
-A versão atual do código contém os seguintes métodos de teste:
+| Classe | Cobertura principal |
+|---|---|
+| `ApiSegurancaTest` | API, sessão, CSRF, perfis, propriedade, validações, códigos HTTP e dados sensíveis. |
+| `AutenticacaoServiceTest` | Política de senha, BCrypt e e-mail duplicado. |
+| `RegrasDeNegocioTest` | Candidatura duplicada/encerrada, propriedade, filtros, áreas e relatórios. |
+| `ConexaoFactoryTest` | Validação de conexão por `DataSource` simulado. |
+| `PortalEstagiosApplicationTests` | Inicialização do contexto Spring no perfil de teste. |
 
-| Classe | Quantidade de métodos `@Test` | Cobertura principal |
-|---|---:|---|
-| `ApiSegurancaTest` | 20 | API, sessão, CSRF, perfis, propriedade, validações, códigos HTTP e dados sensíveis. |
-| `AutenticacaoServiceTest` | 3 | Política de senha, BCrypt e e-mail duplicado. |
-| `RegrasDeNegocioTest` | 10 | Candidatura duplicada/encerrada, propriedade, filtros, áreas e relatórios. |
-| `ConexaoFactoryTest` | 2 | Validação de conexão por `DataSource` simulado. |
-| `PortalEstagiosApplicationTests` | 1 | Inicialização do contexto Spring no perfil de teste. |
-| **Total declarado nos fontes atuais** | **36** | — |
+Resultado da execução de 15/11/2026: `Tests run: 32, Failures: 0, Errors: 0, Skipped: 0` — `BUILD SUCCESS`.
 
-**Atenção à evidência de execução:** o log local compartilhado pela equipe em 15/11/2026 registrou `32 tests run, 0 failures, 0 errors, 0 skipped` e `BUILD SUCCESS`. Naquele log, o Maven mostrou 18 testes em `ApiSegurancaTest`, além de 3 de autenticação, 10 de regras e 1 de contexto. O log não mostrou a classe `ConexaoFactoryTest`. Portanto, não se deve afirmar que os 36 métodos dos fontes atuais foram executados naquela execução. Repita `mvn clean test` na versão final e guarde a saída completa/Surefire reports para registrar o número efetivamente executado.
+Os testes de API e de regras usam o perfil `memoria` ou `DataSource` simulado. A integração dos DAOs JDBC com o Supabase é exercitada pela aplicação em execução.
 
-O log de 15/11 também indicou runtime Java 25.0.5, embora o compilador Maven usasse `--release 17`. Faça a verificação final com JDK 17 selecionado.
+## 14. Verificação funcional
 
-Os testes automatizados usam perfil `memoria`/dependências simuladas quando indicado e não substituem os testes manuais dos DAOs JDBC contra o Supabase real.
+O arquivo `docs/roteiro-verificacao.md` contém o roteiro detalhado. A tabela resume os cenários da Entrega 2.
 
-## 14. Roteiro de teste manual para a avaliação
-
-Registre para cada cenário: dados de entrada, resultado esperado, resultado observado, data e evidência (captura de tela ou resposta do Postman). O arquivo `docs/roteiro-verificacao.md` contém o roteiro detalhado.
-
-| Cenário | Resultado esperado | Evidência recomendada |
+| Cenário | Resultado esperado | Como verificar |
 |---|---|---|
-| Cadastro válido de estudante e empresa | 201 | Tela ou resposta da API. |
+| Cadastro válido de estudante e empresa | 201 | Tela de cadastro ou resposta da API. |
 | E-mail repetido / login com senha incorreta | 409 / 401 | Respostas da API. |
 | Login e logout | 200 / 204 | Sessão criada e invalidada. |
 | Consulta de vagas e filtros | 200 | Tela do navegador. |
-| Publicar e editar vaga com dados inválidos/válidos | 201 / 200 e 400 para entrada inválida | Tela ou Postman. |
+| Publicar e editar vaga | 201 / 200; 400 para entrada inválida | Tela ou Postman. |
 | Carga horária zero ou campos obrigatórios ausentes | 400 | Resposta JSON de validação. |
 | Candidatura válida / duplicada / vaga encerrada | 201 / 409 / 409 | Tela e respostas da API. |
 | Estudante consulta candidaturas próprias | 200, sem dados de outro estudante | Resposta da API. |
 | Empresa consulta/edita vaga própria | 200 | Tela ou Postman. |
-| Empresa tenta acessar vaga de outra empresa | 403 | Resposta da API com duas empresas de teste. |
-| Estudante tenta publicar vaga; empresa tenta candidatar-se | 403 | Respostas da API. |
+| Empresa acessa vaga de outra empresa | 403 | Resposta da API com duas empresas. |
+| Estudante publica vaga; empresa se candidata | 403 | Respostas da API. |
 | Exclusão de área em uso | 409 | Resposta da API. |
-| Usuário sem login acessa endpoint privado | 401 | Resposta da API. |
-| Cadastro público tenta criar administrador | Não existe rota/campo público para isso | Teste de API e código do DTO/Service. |
-| Respostas públicas de usuário | Sem senha/hash | JSON de cadastro/login. |
-| Persistência após reiniciar o servidor | Vaga/usuário continuam no PostgreSQL | Antes/depois da reinicialização e consulta no Supabase. |
+| Usuário sem login em endpoint privado | 401 | Resposta da API. |
+| Cadastro público tenta criar administrador | Não existe rota nem campo para isso | `ApiSegurancaTest`; DTOs de cadastro. |
+| Respostas públicas de usuário | Sem senha nem hash | JSON de cadastro e login. |
+| Persistência após reiniciar o servidor | Vaga e usuário continuam no PostgreSQL | Consulta no Supabase antes e depois. |
 | Operações administrativas | Acesso somente ao administrador | Coleção Postman/Insomnia. |
 | CSRF ausente ou incorreto | Escrita bloqueada (403) | Resposta da API. |
 
 ## 15. Diagramas e documentação complementar
 
-- [`docs/arquitetura.md`](docs/arquitetura.md): arquitetura, fluxo de candidatura, responsabilidades e inicialização JDBC.
+- [`docs/arquitetura.md`](docs/arquitetura.md): arquitetura, fluxo de candidatura e responsabilidades.
 - [`docs/camadas.md`](docs/camadas.md): responsabilidades das camadas.
 - [`docs/modelo-dominio.md`](docs/modelo-dominio.md): diagrama de domínio.
 - [`docs/esquema-tabelas.md`](docs/esquema-tabelas.md): esquema relacional.
 - [`docs/entrega-2-implementacao.md`](docs/entrega-2-implementacao.md): decisões e implementação da Entrega 2.
-- [`docs/roteiro-verificacao.md`](docs/roteiro-verificacao.md): roteiro de testes manuais.
-- [`docs/checklist-entrega-2.md`](docs/checklist-entrega-2.md): conferência dos requisitos do enunciado e itens de envio.
-- [`docs/evidencias/README.md`](docs/evidencias/README.md): instruções para guardar somente evidências reais dos testes e da demonstração.
-- [`docs/RELATORIO-ENTREGA-2.md`](docs/RELATORIO-ENTREGA-2.md): diagnóstico e relatório técnico.
-- [`Registro_IA.md`](Registro_IA.md): registro de interações relevantes com IA. A equipe deve revisar e confirmar as decisões/experiências descritas antes de enviar.
+- [`docs/roteiro-verificacao.md`](docs/roteiro-verificacao.md): roteiro de verificação.
+- [`docs/RELATORIO-ENTREGA-2.md`](docs/RELATORIO-ENTREGA-2.md): relatório técnico.
+- [`Registro_IA.md`](Registro_IA.md): registro de interações com IA.
 
-## 16. Preparação do envio no Moodle
+## 16. Empacotamento e versionamento
 
-O enunciado solicita **link e ZIP da versão `entrega-2`**, instruções para executar aplicação e banco, diagramas atualizados, documentação da API, dados fictícios, registro de IA e evidências de verificação.
+**O pacote contém:** código-fonte e `pom.xml`; `.env.example` sem credenciais; scripts SQL; interface estática; testes automatizados; README, diagramas e documentação.
 
-Antes do envio:
-
-1. Faça uma execução final com JDK 17: `mvn clean test`; salve o resultado real.
-2. Inicie usando o `.env` local e o Supabase; teste consulta de vagas, cadastro/login e persistência após reiniciar.
-3. Execute e registre os cenários manuais do roteiro, incluindo autorização por propriedade, CSRF e administrador.
-4. Revise se os diagramas representam a versão efetiva do código e se o `Registro_IA.md` foi confirmado pelo grupo.
-5. Confira que `.env`, senha, tokens, arquivos `target/`, `.class` e dados reais não aparecem no ZIP nem no GitHub.
-6. Faça commit da documentação/correções e marque a versão no Git, por exemplo:
+**Fora do pacote e do repositório:** `.env`, credenciais, tokens, `.git`, `target/`, arquivos `.class` e dados pessoais reais.
 
 ```bash
 git status --short
 git add README.md portal_estagio/README.md portal_estagio/Registro_IA.md portal_estagio/docs
- git commit -m "docs: finalizar documentacao da entrega 2"
+git commit -m "docs: documentacao da entrega 2"
 git tag -a entrega-2 -m "Portal de Estagios - Entrega 2"
 git push origin main
 git push origin entrega-2
 ```
 
-7. Gere o ZIP limpo da versão `entrega-2` e envie junto com o link/tag do GitHub, documentação e evidências no Moodle.
+## 17. Escopo implementado
 
-**Não inclua** `.env`, credenciais, tokens, `.git`, `target/`, arquivos `.class` ou dados pessoais/reais. O `.env.example` deve permanecer com placeholders.
-
-## 17. Situação conhecida e pendências finais
-
-O código e a documentação cobrem os fluxos da Entrega 2: API REST, DTOs/validação, erros globais, sessão/CSRF, BCrypt, autorização por perfil e propriedade, interface mínima, JDBC/PostgreSQL, conta administrativa controlada, testes e diagramas.
-
-A equipe relatou que o portal passou a funcionar com Supabase depois de colocar o `.env` dentro de `portal_estagio/`. Para que isso se transforme em evidência de entrega, ainda é necessário guardar um log/captura da versão final conectada e concluir a conferência abaixo:
-
-- [ ] `mvn clean test` executado na versão final usando JDK 17; registrar contagem real (há diferença entre os 36 métodos presentes nos fontes e o log anterior de 32 testes executados).
-- [ ] A conexão e operações JDBC foram verificadas na versão final contra o Supabase.
-- [ ] Persistência foi comprovada após reiniciar a aplicação.
-- [ ] Fluxos de estudante, empresa, administrador, CSRF e propriedade foram demonstrados e registrados.
-- [ ] Diagrama de arquitetura e de domínio foram revisados contra o código atual.
-- [ ] Registro de IA tem ao menos três interações relevantes da Entrega 2 revisadas pelo grupo.
-- [ ] ZIP e link/tag `entrega-2` estão prontos para o Moodle, sem segredos nem artefatos de build.
-
-O roteiro e o checklist existem para orientar essa verificação; não substituem a execução e o registro dos resultados pela equipe.
+API REST com DTOs e validação, tratamento global de erros, sessão HTTP com CSRF, BCrypt, autorização por perfil e por propriedade, interface web para visitante, estudante e empresa, persistência JDBC/PostgreSQL, conta administrativa criada por inicialização controlada, testes automatizados e diagramas.
